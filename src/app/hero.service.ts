@@ -17,6 +17,10 @@ export class HeroService {
     private messageService: MessageService
   ) { }
 
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
+
   private heroesUrl = 'api/heroes';  // Web APIのURL
   /** サーバーからヒーローを取得する */
   getHeroes(): Observable<Hero[]> {
@@ -33,6 +37,15 @@ export class HeroService {
     return this.http.get<Hero>(url).pipe(
       tap(_ => this.log(`fetched hero id=${id}`)),
       catchError(this.handleError<Hero>(`getHero id=${id}`))
+    );
+  }
+
+  /** PUT: サーバー上でヒーローを更新 */
+  updateHero(hero: Hero): Observable<any> {
+    const url = `${this.heroesUrl}/${hero.id}`;
+    return this.http.put(url, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=${hero.id}`)),
+      catchError(this.handleError<any>('updateHero'))
     );
   }
 
